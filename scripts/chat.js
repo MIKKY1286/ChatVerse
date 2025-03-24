@@ -1,50 +1,78 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { 
-    getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp 
+    getAuth, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { 
+    getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, doc, getDoc, serverTimestamp, updateDoc 
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCsa2c82g1OHNU2HcxCyQLr5RSM7DEDQXM",
-    authDomain: "deepvoid-6baf3.firebaseapp.com",
-    projectId: "deepvoid-6baf3",
-    storageBucket: "deepvoid-6baf3.firebasestorage.app",
-    messagingSenderId: "648550508783",
-    appId: "1:648550508783:web:1fa9900478503abe4b531a"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Get receiver's username from URL parameters
+// Get the receiver's username from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const receiver = urlParams.get("user");
-const sender = localStorage.getItem("username") || "Guest"; // Replace with actual auth user
+
+if (!receiver) {
+    alert("Invalid chat session.");
+    window.location.href = "index.html"; // Redirect if no user is selected
+}
 
 // DOM Elements
+const chatHeader = document.getElementById("chat-header");
 const chatContainer = document.getElementById("chat-messages");
 const messageInput = document.getElementById("message-input");
 const sendButton = document.getElementById("send-button");
+const logoutButton = document.getElementById("logout-button");
 
-// Update chat header
-document.addEventListener("DOMContentLoaded", () => {
-    const chatHeader = document.getElementById("chat-header");
-    chatHeader.textContent = receiver || "Chat";
-});
+let senderEmail = null;
 
-// Function to load messages in real-time
-function loadMessages() {
-    if (!receiver) {
-        console.error("Receiver username is missing in the URL.");
+// Check if user is logged in
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        // Redirect to login page if not logged in
+        window.location.href = "login.html";
         return;
     }
 
-    const chatRef = collection(db, "messages");
+    senderEmail = user.email;
+    await loadReceiverProfile();
+    loadMessages();
+    updateUserStatus(true);
+});
+
+// Function to load receiver's profile
+async function loadReceiverProfile() {
+    try {
+        const userDoc = await getDoc(doc(db, "users", receiver));
+        if (userDoc.exists()) {
+            chatHeader.textContent = userDoc.data().name || receiver;
+        } else {
+            chatHeader.textContent = receiver; // Fallback to email
+        }
+    } catch (error) {
+        console.error("Error fetching receiver profile:", error);
+    }
+}
+
+// Function to load messages in real-time
+function loadMessages() {
     const chatQuery = query(
-        chatRef,
-        where("participants", "array-contains", sender), // Fetch only relevant chats
+        collection(db, "messages"),
+        where("participants", "array-contains", senderEmail),
         orderBy("timestamp", "asc")
     );
 
@@ -52,10 +80,10 @@ function loadMessages() {
         chatContainer.innerHTML = ""; // Clear previous messages
 
         snapshot.docs.forEach(doc => {
-            const { sender: msgSender, message, timestamp } = doc.data();
+            const { sender, message, timestamp } = doc.data();
 
             const msgDiv = document.createElement("div");
-            msgDiv.classList.add("message", msgSender === sender ? "sent" : "received");
+            msgDiv.classList.add("message", sender === senderEmail ? "sent" : "received");
 
             msgDiv.innerHTML = `
                 <p>${message}</p>
@@ -72,21 +100,13 @@ function loadMessages() {
 // Function to send a message
 async function sendMessage() {
     const message = messageInput.value.trim();
-    if (!message) {
-        alert("Message cannot be empty!");
-        return;
-    }
-
-    if (!receiver) {
-        alert("No receiver found!");
-        return;
-    }
+    if (!message) return;
 
     try {
         await addDoc(collection(db, "messages"), {
-            sender,
+            sender: senderEmail,
             receiver,
-            participants: [sender, receiver],
+            participants: [senderEmail, receiver],
             message,
             timestamp: serverTimestamp()
         });
@@ -94,16 +114,37 @@ async function sendMessage() {
         messageInput.value = ""; // Clear input field
     } catch (error) {
         console.error("Error sending message:", error);
-        alert("Failed to send message!");
     }
 }
 
-// Ensure event listeners are added correctly
-document.addEventListener("DOMContentLoaded", () => {
-    sendButton.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendMessage();
-    });
+// Update user online status
+async function updateUserStatus(isOnline) {
+    if (!senderEmail) return;
 
-    loadMessages(); // Load messages when the page loads
+    try {
+        const userRef = doc(db, "users", senderEmail);
+        await updateDoc(userRef, { online: isOnline });
+    } catch (error) {
+        console.error("Error updating user status:", error);
+    }
+}
+
+// Event Listeners
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+});
+
+// Logout function
+logoutButton.addEventListener("click", () => {
+    signOut(auth).then(() => {
+        window.location.href = "./login.html";
+    }).catch(error => {
+        console.error("Error logging out:", error);
+    });
+});
+
+// Handle when the user closes the window
+window.addEventListener("beforeunload", () => {
+    updateUserStatus(false);
 });
