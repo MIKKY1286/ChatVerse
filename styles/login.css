@@ -1,0 +1,69 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Input fields */
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #6a0dad;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    color: #6a0dad;
+}
+
+/* Buttons */
+.btn {
+    width: 90%;
+    padding: 12px;
+    background: #6a0dad; /* Purple */
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background: #500a8d; /* Darker Purple */
+}
+
+.google-btn {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    background: white;
+    color: #6a0dad;
+    border: 2px solid #6a0dad;
+}
+
+.google-btn:hover {
+    background: #6a0dad;
+    color: white;
+}
+
+/* Error Message */
+#error-message {
+    color: red;
+    margin-top: 10px;
+}

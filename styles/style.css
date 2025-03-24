@@ -1,0 +1,35 @@
+/* Fullscreen Splash */
+.splash-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: rgb(64, 1, 80);
+    text-align: center;
+}
+
+.logo {
+    width: 120px;
+    height: 120px;
+    animation: fadeInOut 2s infinite;
+}
+
+.app-name {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: sans-serif;
+    opacity: 0;
+    animation: fadeIn 3s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

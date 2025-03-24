@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat List</title>
+    <link rel="stylesheet" href="../styles/chat-list.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="chat-list-container">
+        <h2>Chats</h2>
+
+        <!-- Search Bar -->
+        <div class="search-bar-container">
+            <input type="text" id="search-bar" placeholder="🔍 Search chats..." onkeyup="searchChats()">
+        </div>
+
+        <!-- Chat List -->
+        <ul id="chat-list">
+            <p>Loading chats...</p> <!-- Placeholder while loading -->
+        </ul>
+    </div>
+
+    <!-- Floating New Chat Button -->
+    <button id="startNewChatBTN" class="new-chat-btn">➕</button>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+    <!-- Chat List JavaScript -->
+    <script type="module" src="../scripts/chat-list.js"></script>
+
+</body>
+</html>

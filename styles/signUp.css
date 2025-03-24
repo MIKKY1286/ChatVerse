@@ -1,0 +1,74 @@
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: #6a0dad;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Sign-Up Box */
+.signup-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: white; /* White Box */
+    color: #6a0dad; /* Purple Text */
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Input Fields */
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #6a0dad;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    color: #6a0dad;
+}
+
+input:focus {
+    border-color: #500a8d; /* Darker Purple */
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: #6a0dad; /* Purple */
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background: #500a8d; /* Darker Purple */
+}
+
+/* Google Sign-up Button */
+.google-btn {
+    background: white;
+    color: #6a0dad;
+    border: 2px solid #6a0dad;
+}
+
+.google-btn:hover {
+    background: #6a0dad;
+    color: white;
+}
+
+/* Error Message */
+#error-message {
+    color: red;
+    margin-top: 10px;
+}
